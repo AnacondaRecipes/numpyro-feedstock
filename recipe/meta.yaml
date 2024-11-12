@@ -8,13 +8,14 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/numpyro-{{ version }}.tar.gz
   sha256: f445eeae6200f883d790d65ce29ff245f7a9639bac3322d993eccf91c44023b3
+  # Need to avoid this issue:
+  # numpyro 0.15.3 has requirement jaxlib>=0.4.25, but you have jaxlib 0.4.25.dev20241106.
   patches:
-    - 0001-Lower-jax-constrains-in-setup.patch
+    - 0001-Add-dev-in-the-semver.patch
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  skip: True  # [py<39 or py>312]
 
 requirements:
   build: 
@@ -26,12 +27,11 @@ requirements:
     - wheel
   run:
     - python
-    - jax >=0.4.23
-    - jaxlib >=0.4.23
+    - jax >=0.4.25
+    - jaxlib >=0.4.25
     - multipledispatch
     - numpy
     - tqdm
-    - scipy <1.13
 
 test:
   imports:
