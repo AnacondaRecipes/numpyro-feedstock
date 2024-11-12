@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/numpyro-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: f445eeae6200f883d790d65ce29ff245f7a9639bac3322d993eccf91c44023b3
   # Need to avoid this issue:
   # numpyro 0.15.3 has requirement jaxlib>=0.4.25, but you have jaxlib 0.4.25.dev20241106.
