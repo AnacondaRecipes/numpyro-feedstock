@@ -22,8 +22,13 @@ requirements:
     - python
     - pip
     - wheel
+    - setuptools
   run:
     - python
+    # Jax v0.4.35 is not support python 3.9
+    # https://github.com/jax-ml/jax/blob/jax-v0.4.35/setup.py#L118
+    # If we need to add compatibility with python3.9 we must add Jax v0.4.25
+    # https://github.com/jax-ml/jax/blob/jax-v0.4.25/setup.py#L188
     - jax >=0.4.25 # [py>39]
     - jaxlib >=0.4.25 # [py>39]
     - multipledispatch
