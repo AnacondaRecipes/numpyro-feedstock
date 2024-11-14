@@ -65,7 +65,7 @@ test:
       --ignore=test/contrib/stochastic_support/test_sdvi.py
         test/contrib
     # test/infer:
-    # funsor >=0.4.1 missing
+    # funsor >=0.4.1(all_platforms) and optax(win-64) missing
     - pytest -v
       --ignore=test/infer/test_gradient.py
       --ignore=test/infer/test_autoguide.py
@@ -97,7 +97,7 @@ test:
       --deselect=test/test_model_rendering.py::test_render_model_filename
         test/test_model_rendering.py
     - pytest -v test/test_nn.py
-    # chex==0.1.84 missing
+    # chex==0.1.84(all_platforms) and optax(win-64) missing
     #- pytest -v --ignore=test/test_optimizers.py test/test_optimizers.py #Disabled. Reason - ignored file
     # funsor >=0.4.1 missing
     #- pytest -v --ignore=test/test_pickle.py test/test_pickle.py #Disabled. Reason - ignored file
@@ -106,7 +106,7 @@ test:
   requires:
     - pip
     - pytest
-    - optax>=0.0.6
+    - optax>=0.0.6 # [not win]
     - scikit-learn
     - matplotlib
     # Needs to run all tests:
