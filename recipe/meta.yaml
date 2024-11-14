@@ -16,6 +16,7 @@ source:
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  skip: True  # [py<39 py>311]
 
 requirements:
   #build: 
@@ -27,8 +28,10 @@ requirements:
     - wheel
   run:
     - python
-    - jax >=0.4.25
-    - jaxlib >=0.4.25
+    #- jax ==0.4.25 # [py==39]
+    - jax >=0.4.25 # [py>39]
+    #- jaxlib ==0.4.25 # [py==39]
+    - jaxlib >=0.4.25 # [py>39]
     - multipledispatch
     - numpy
     - tqdm
