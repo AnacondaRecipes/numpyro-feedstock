@@ -8,34 +8,30 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: f445eeae6200f883d790d65ce29ff245f7a9639bac3322d993eccf91c44023b3
-  # Need to avoid this issue:
-  # numpyro 0.15.3 has requirement jaxlib>=0.4.25, but you have jaxlib 0.4.25.dev20241106.
-  #patches:
-  #  - 0001-Add-dev-in-the-semver.patch
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  skip: True  # [py<=39 or py>311]
+  # Missing jax and jaxlib python version 3.9
+  # https://github.com/jax-ml/jax/blob/jax-v0.4.35/setup.py#L118
+  # Missing jax and jaxlib for s390x
+  skip: True  # [py<=39 or py>311 or s390x]
 
 requirements:
-  #build: 
-  #  - patch  # [not win]
-  #  - m2-patch  # [win]
   host:
     - python
     - pip
     - wheel
   run:
     - python
-    #- jax ==0.4.25 # [py==39]
     - jax >=0.4.25 # [py>39]
-    #- jaxlib ==0.4.25 # [py==39]
     - jaxlib >=0.4.25 # [py>39]
     - multipledispatch
     - numpy
     - tqdm
 
+# Skipped pytest by dependencies packages missing reason. 
+# pyro-api >=0.1.1 and funsor >=0.4.1
 test:
   imports:
     - numpyro
