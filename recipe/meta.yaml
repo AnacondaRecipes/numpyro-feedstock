@@ -10,17 +10,17 @@ source:
   sha256: f445eeae6200f883d790d65ce29ff245f7a9639bac3322d993eccf91c44023b3
   # Need to avoid this issue:
   # numpyro 0.15.3 has requirement jaxlib>=0.4.25, but you have jaxlib 0.4.25.dev20241106.
-  patches:
-    - 0001-Add-dev-in-the-semver.patch
+  #patches:
+  #  - 0001-Add-dev-in-the-semver.patch
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
 
 requirements:
-  build: 
-    - patch  # [not win]
-    - m2-patch  # [win]
+  #build: 
+  #  - patch  # [not win]
+  #  - m2-patch  # [win]
   host:
     - python
     - pip
