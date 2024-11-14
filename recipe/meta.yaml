@@ -38,12 +38,16 @@ requirements:
 # Skipped pytest by dependencies packages missing reason. 
 # pyro-api >=0.1.1 and funsor >=0.4.1
 test:
+  source_files:
+    - test
   imports:
     - numpyro
   commands:
     - pip check
+    - pytest -v --ignore=test/test_pickle.py test/test_handlers.py
   requires:
     - pip
+    - pytest
 
 about:
   home: https://github.com/pyro-ppl/numpyro
