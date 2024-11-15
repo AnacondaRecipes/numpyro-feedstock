@@ -6,7 +6,6 @@ package:
   version: {{ version }}
 
 source:
-  #url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   url: https://github.com/pyro-ppl/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
   sha256: b8fbcc259575dfb9068e947015acde42b389772141a0d24acc640d2335e16d99
 
@@ -103,7 +102,7 @@ test:
     # osx-arm64 consist optax but don`t have openssl[version='>=1.1.1j,<1.1.2a as dep by optax
     - optax>=0.0.6 # [not (win or osx)]
     - scikit-learn
-    - matplotlib
+    - matplotlib-base
     # Needs to run all tests:
     # - graphviz
     # - funsor >=0.4.1
