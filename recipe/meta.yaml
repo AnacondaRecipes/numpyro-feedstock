@@ -1,34 +1,116 @@
 {% set name = "numpyro" %}
-{% set version = "0.11.0" %}
+{% set version = "0.15.3" %}
 
 package:
-  name: numpyro
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d357dd1a0159f86d45c233708ad33a3d3d53431d05b4bbece1d068ae4168aa8e
+  url: https://github.com/pyro-ppl/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b8fbcc259575dfb9068e947015acde42b389772141a0d24acc640d2335e16d99
 
 build:
-  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  script: {{ PYTHON }} -m pip install .
+  # Missing jax and jaxlib python version 3.9
+  # https://github.com/jax-ml/jax/blob/jax-v0.4.35/setup.py#L118
+  # Missing jax and jaxlib for s390x
+  # The numpyro max version python 3.11
+  skip: True  # [py<=39 or py>311 or s390x]
 
 requirements:
   host:
-    - python >=3.6
+    - python
     - pip
+    - wheel
+    - setuptools
   run:
-    - jax >=0.2
-    - jaxlib >=0.1.55
+    - python
+    # Jax v0.4.35 is not support python 3.9
+    # https://github.com/jax-ml/jax/blob/jax-v0.4.35/setup.py#L118
+    # If we need to add compatibility with python3.9 we must add Jax v0.4.25
+    # https://github.com/jax-ml/jax/blob/jax-v0.4.25/setup.py#L188
+    - jax >=0.4.25
+    - jaxlib >=0.4.25
     - multipledispatch
     - numpy
-    - python >=3.6
     - tqdm
 
+# ignoring tests because we don't have this pkgs in the conda remote channels
+# test/contrib directory missing:
+# funsor >=0.4.1(all_platforms)
+# flax
+# dm-haiku
+{% set ignore_modules =                  " --ignore=test/contrib/test_infer_discrete.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/test_funsor.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/test_enum_elbo.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/test_esc_proxies.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/einstein/test_mixture_guide_predictive.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/einstein/test_stein_kernels.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/einstein/test_steinvi.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/einstein/test_stein_loss.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/einstein/test_steinvi_util.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/test_module.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/test_nested_sampling.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/test_tfp.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/hsgp/test_approximation.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/hsgp/test_spectral_densities.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/contrib/stochastic_support/test_sdvi.py" %}
+
+# test/infer directory missing::
+# funsor >=0.4.1(all_platforms)
+# optax(win and osx)
+{% set ignore_modules = ignore_modules + " --ignore=test/infer/test_gradient.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/infer/test_autoguide.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/infer/test_hmc_gibbs.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/infer/test_hmc_gibbs.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/infer/test_infer_util.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/infer/test_mcmc.py" %}
+{% set ignore_modules = ignore_modules + " --ignore=test/infer/test_svi.py" %}
+
+# test/pyroapi directory missing::
+# pyro-api >=0.1.1
+{% set ignore_modules = ignore_modules + " --ignore=test/pyroapi/test_pyroapi.py" %}
+
+# test directory missing:
+# funsor >=0.4.1
+{% set ignore_modules = ignore_modules + " --ignore=test/test_distributions.py" %}
+# tensorflow_probability >=0.18.0 (Only 1 test)
+{% set deselect_tests =                  " --deselect=test/test_distributions_util.py::test_no_tracer_leak_at_lazy_property_sample" %}
+# funsor >=0.4.1
+{% set ignore_modules = ignore_modules + " --ignore=test/test_examples.py" %}
+# graphviz
+{% set deselect_tests = deselect_tests + " --deselect=test/test_model_rendering.py::test_render_model_filename" %}
+# chex==0.1.84(all_platforms) and optax(win and osx)
+{% set ignore_modules = ignore_modules + " --ignore=test/test_optimizers.py" %}
+# funsor >=0.4.1 missing
+{% set ignore_modules = ignore_modules + " --ignore=test/test_pickle.py" %}
+
 test:
+  source_files:
+    - test
+    - examples
   imports:
     - numpyro
+  commands:
+    - pip check
+    - pytest -v {{ ignore_modules }} {{ deselect_tests }} test
+  requires:
+    - pip
+    - pytest
+    # optax is not avaliable on win-64 and osx-64 
+    # osx-arm64 consist optax but don`t have openssl[version='>=1.1.1j,<1.1.2a as dep by optax
+    - optax >=0.0.6 # [not (win or osx)]
+    - scikit-learn
+    - matplotlib-base
+    # Needs to run all tests:
+    # - graphviz
+    # - funsor >=0.4.1
+    # - tensorflow_probability >=0.18.0
+    # - pyro-api >=0.1.1
+    # - flax
+    # - dm-haiku
+    # - chex==0.1.84
 
 about:
   home: https://github.com/pyro-ppl/numpyro
@@ -37,6 +119,8 @@ about:
   license_file: LICENSE.md
   summary: Pyro PPL on NumPy
   doc_url: https://num.pyro.ai/en/stable/
+  dev_url: https://github.com/pyro-ppl/numpyro
+  description: Probabilistic programming powered by JAX for autograd and JIT compilation to GPU/TPU/CPU.
 
 extra:
   recipe-maintainers:
