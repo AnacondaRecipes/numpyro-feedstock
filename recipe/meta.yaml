@@ -100,7 +100,7 @@ test:
     - pytest
     # optax is not avaliable on win-64 and osx-64 
     # osx-arm64 consist optax but don`t have openssl[version='>=1.1.1j,<1.1.2a as dep by optax
-    - optax>=0.0.6 # [not (win or osx)]
+    - optax >=0.0.6 # [not (win or osx)]
     - scikit-learn
     - matplotlib-base
     # Needs to run all tests:
