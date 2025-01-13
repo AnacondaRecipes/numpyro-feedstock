@@ -8,17 +8,22 @@ package:
 source:
   url: https://github.com/pyro-ppl/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
   sha256: b8fbcc259575dfb9068e947015acde42b389772141a0d24acc640d2335e16d99
+  patches:
+    - 0001-patch-jax-and-jaxlib-requirement.patch
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
-  # Missing jax and jaxlib python version 3.9
-  # https://github.com/jax-ml/jax/blob/jax-v0.4.35/setup.py#L118
+  number: 1
   # Missing jax and jaxlib for s390x
   # The numpyro max version python 3.11
-  skip: True  # [py<=39 or py>311 or s390x]
+  skip: True  # [py>311 or s390x]
+  # skipping py39 on win because of missing jax and jaxlib
+  skip: True  # [win and py<=39]
 
 requirements:
+  build:
+    - patch     # [not win]
+    - m2-patch  # [win]
   host:
     - python
     - pip
