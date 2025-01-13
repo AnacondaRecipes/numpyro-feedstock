@@ -17,6 +17,8 @@ build:
   # Missing jax and jaxlib for s390x
   # The numpyro max version python 3.11
   skip: True  # [py>311 or s390x]
+  # skipping py39 on win because of missing jax and jaxlib
+  skip: True  # [win and py==39]
 
 requirements:
   build:
